@@ -58,7 +58,7 @@ public class Player {
             }
         }
         
-        if (ValidSyllables>=46) {
+        if (ValidSyllables>=45) {
             
             //clear wordlist and reset
             WordList.clear();

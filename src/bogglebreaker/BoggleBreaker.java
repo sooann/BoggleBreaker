@@ -6,6 +6,7 @@ package bogglebreaker;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -37,6 +38,7 @@ public class BoggleBreaker {
         dict = new WordDict("en_US");
         
         long timestamp = new Date().getTime();
+        long SessionStartTime = timestamp;
         while (gameboards.size() != Integer.MAX_VALUE) {
             if (gameboards.size() > 0) {
 
@@ -96,9 +98,21 @@ public class BoggleBreaker {
                             MinTimeTaken = timetakensec;
                         }
                     }
+                    
+                    if (gameboards.size()%20==0) {
+                        TotalTimeTaken=0;
+                    }
+                    
                     TotalTimeTaken += timetakensec;
-                    System.out.println("Board Selection Analysis: Mean: "+TotalTimeTaken/gameboards.size()+" Min: "+MinTimeTaken+" Max: "+MaxTimeTaken);
-                    System.out.println("Total Time Taken: " + TotalTimeTaken/60/60/24 + " Days "+ TotalTimeTaken/60/60 + " Hours " + TotalTimeTaken/60 + " Mins " + TotalTimeTaken%60 + " Secs");
+                    System.out.println("Board Selection Analysis: Mean: "+TotalTimeTaken/((gameboards.size()%20)+1)+" Min: "+MinTimeTaken+" Max: "+MaxTimeTaken);
+                    
+                    long millis = new Date().getTime() - SessionStartTime;
+                    String hms = String.format("%02d Days %02d Hrs %02d Mins %02d Secs", 
+                            TimeUnit.MILLISECONDS.toDays(millis), 
+                            TimeUnit.MILLISECONDS.toHours(millis) % TimeUnit.DAYS.toHours(1), 
+                            TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
+                            TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
+                    System.out.println("Total Time Taken: " + hms);
                     
                     System.out.println("");
                     
