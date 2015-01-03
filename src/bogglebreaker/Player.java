@@ -25,6 +25,7 @@ public class Player {
     private int boardWidthLimit;
     
     private long iterationCount = 0; 
+    private long preCheckTimeTaken = 0;
     private long timetaken;
     
     private int ValidSyllables=0;
@@ -38,6 +39,7 @@ public class Player {
         
         int CurrX=0;
         int CurrY=0;
+        long timestamp = new Date().getTime();
         
         //count number of 2 valid syllables
         while (CurrX<boardWidthLimit && CurrY<boardHeightLimit) {
@@ -58,6 +60,8 @@ public class Player {
             }
         }
         
+        this.preCheckTimeTaken = new Date().getTime() - timestamp;
+        
         if (ValidSyllables>=45) {
             
             //clear wordlist and reset
@@ -68,7 +72,7 @@ public class Player {
             iterationCount=0;
             
             //search for word
-            long timestamp = new Date().getTime();
+            timestamp = new Date().getTime();
             while (CurrX<boardWidthLimit && CurrY<boardHeightLimit) {
                 findWord (CurrX, CurrY);
                 CurrentWord="";
@@ -215,6 +219,10 @@ public class Player {
     
     public boolean IsSyllableRejected() {
         return this.syllableRejection;
+    }
+    
+    public long getPreCheckTime() {
+        return this.preCheckTimeTaken;
     }
 }
 
