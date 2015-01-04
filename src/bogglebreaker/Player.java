@@ -62,7 +62,7 @@ public class Player {
         
         this.preCheckTimeTaken = new Date().getTime() - timestamp;
         
-        if (ValidSyllables>=45) {
+        if (ValidSyllables>=48) {
             
             //clear wordlist and reset
             WordList.clear();

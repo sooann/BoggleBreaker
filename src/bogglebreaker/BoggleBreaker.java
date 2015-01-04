@@ -24,7 +24,7 @@ public class BoggleBreaker {
     public static void main(String[] args) {
 
         int RejectedCount=0;
-        int SyllableRejectionCount = 0;
+        int TotalSyllableRejectionCount = 0;
         
         int MaxUniqueFirstSyll = 0;
         int MinUniqueFirstSyll = 0;
@@ -42,7 +42,6 @@ public class BoggleBreaker {
         long SyllableRejTimeTaken=0;
         long countSearchResultRej=0;
         long SearchResultRejTimeTaken=0;
-        long totalRejCountInternval=0;
         
         //load dictionary
         dict = new WordDict("en_US");
@@ -59,24 +58,24 @@ public class BoggleBreaker {
                 Player play = new Player(tempboard, dict);
 
                 //check if unqiue words >100
-                if (play.getUniqueWordCount() > 75) {
+                if (play.getUniqueWordCount() > 100) {
                     
                     long timetakenmsec = (new Date().getTime() - timestamp);
                     long timetakensec = timetakenmsec/1000;
                     String Timetaken = (timetakensec/60) + " min " + (timetakensec % 60) + "."+(timetakenmsec%1000)+" sec";
                     
-                    System.out.println("Board No: " + gameboards.size()+ ", Rejected count: "+RejectedCount + " (Syll: " + SyllableRejectionCount + ")" +", Taken: " + Timetaken);
+                    System.out.println("Board No: " + gameboards.size()+ ", Rejected count: "+RejectedCount + " (Syll: " + TotalSyllableRejectionCount + ")" +", Taken: " + Timetaken);
                     tempboard.printBoard();
                     System.out.println("Unique Words: "+play.getUniqueWordCount() + ", Words Found: "+ play.getWordCount());
                     for (int i=0; i<play.getWordList().size(); i++) {
                         System.out.print (play.getWordList().get(i)+", ");
-                        if ((i+1)%20==0) {
+                        if ((i+1)%25==0) {
                             System.out.println("");
                         }
                     }
                     
                     System.out.println("\n"+new String(new char[100]).replace("\0", "="));
-                    System.out.println("No of Unique First Syllable: "+play.getTwoSyllableCount()+", No of Iterations: "+play.getIteration()+", Time Taken: "+play.getTimeTaken()+" msec");
+                    System.out.println("No of Iterations: "+play.getIteration()+", Time Taken: "+play.getTimeTaken()+" msec, Iteration Duration: " + (float)play.getTimeTaken()/(float)play.getIteration()*1000.00 + "ns" );
                     
                     //Syllable Analysis
                     if (MaxUniqueFirstSyll==0 && MinUniqueFirstSyll==0) {
@@ -93,7 +92,7 @@ public class BoggleBreaker {
                     }
                     
                     TotalUniqueFirstSyll +=play.getTwoSyllableCount();
-                    System.out.println("Unique First Syllable Analysis: Mean: "+TotalUniqueFirstSyll/gameboards.size()+" Min: "+MinUniqueFirstSyll+" Max: "+MaxUniqueFirstSyll);
+                    System.out.println("Unique First Syllable Analysis: Current: "+play.getTwoSyllableCount()+" Mean: "+TotalUniqueFirstSyll/gameboards.size()+" Min: "+MinUniqueFirstSyll+" Max: "+MaxUniqueFirstSyll);
                     
                     //Performance Analysis - Sample Size 20
                     if (gameboards.size()%20==0) {
@@ -117,8 +116,8 @@ public class BoggleBreaker {
                     
                     TotalTimeTaken += timetakenmsec;
                     
-                    System.out.println(
-                            String.format("Selection Time Analysis (20 Samples) - Mean: %.4f Min: %.4f Max: %.4f", 
+                    System.out.print(
+                            String.format("Selection Time Analysis (20 Samples) - Mean: %.4f Min: %.4f Max: %.4f\t\t", 
                             ((float)TotalTimeTaken/(float)((gameboards.size()%20)+1)/(float)1000),
                             ((float)MinTimeTaken/(float)1000),
                             ((float)MaxTimeTaken/(float)1000))
@@ -145,6 +144,32 @@ public class BoggleBreaker {
                             ((float)GlobalMinTimeTaken/(float)1000),
                             ((float)GlobalMaxTimeTaken/(float)1000))
                     );
+					
+					//Performance Analysis - Syllable Rejection
+					if (countSyllableRej >0) {
+						System.out.print(
+								String.format("Syllable Rejection Analysis: Count: %d, Time Taken: %d msec, Ave.: %.4f msec\t\t",
+								countSyllableRej, SyllableRejTimeTaken,
+								(float)SyllableRejTimeTaken/(float)countSyllableRej)
+						);
+					}
+					
+					//reset Syllable Rejection counters
+					countSyllableRej=0;
+					SyllableRejTimeTaken=0;
+					
+					//Performance Analysis - Search Result Rejection
+					if (countSearchResultRej>0) {
+						System.out.println(
+								String.format("Search Result Rejection Analysis: Count: %d, Time Taken: %d msec, Ave.: %.4f msec",
+								countSearchResultRej, SearchResultRejTimeTaken, 
+								(float)SearchResultRejTimeTaken/(float)countSearchResultRej)
+						);	
+					}
+					
+					//reset Syllable Rejection counters
+					countSearchResultRej=0;
+					SearchResultRejTimeTaken=0;
                     
                     //Total Running time
                     long millis = new Date().getTime() - SessionStartTime;
@@ -164,8 +189,13 @@ public class BoggleBreaker {
                     //blacklistgameboards.add(tempboard);
                     RejectedCount++;
                     if (play.IsSyllableRejected()) {
-                        SyllableRejectionCount++;
-                    }
+                        TotalSyllableRejectionCount++;
+						countSyllableRej++;
+						SyllableRejTimeTaken += play.getPreCheckTime();
+                    } else {
+						countSearchResultRej++;
+						SearchResultRejTimeTaken += play.getTimeTaken();
+					}
                 }
 
             } else {

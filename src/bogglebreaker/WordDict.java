@@ -44,7 +44,6 @@ public class WordDict {
         try (Statement stmt = conn.createStatement()) {
             //create wordlist table
             String SQL = "Create Table Wordlist(word VARCHAR(255)); Create Index IDX_Wordlist_Word on Wordlist(word); ";
-            SQL += "Create Table TwoLetterList(word VARCHAR(255)); Create Index IDX_TwoLetterList_Word on TwoLetterList(word); ";
             stmt.execute(SQL);
             
         } catch (SQLException e) {
@@ -53,7 +52,7 @@ public class WordDict {
         
         //load words from file
         loadWordlist(locale);
-        loadTwoLetterList();
+        //loadTwoLetterList();
         
         try (Statement stmt = conn.createStatement()) {
             
@@ -64,39 +63,16 @@ public class WordDict {
             } else { 
                 System.out.println("Dictionary not Loaded.");
             }
-            
-            SQL = "select count(*) from TwoLetterList";
-            rs = stmt.executeQuery(SQL);
-            if (rs.next()) {
-                System.out.println("Loaded " + rs.getString(1) + " TwoLetters.");
-            } else { 
-                System.out.println("Dictionary not Loaded.");
-            }
-            
-            System.out.println("Time Taken: " + ((new Date().getTime())-timestamp)/1000 + " Seconds");
+			
+            System.out.println("Time Taken: " + (float)((new Date().getTime())-timestamp)/1000.00 + " Seconds");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
     
     public Boolean FindTwoLetters (String word) {
-        
-        String SQL = "select count(*) from TwoLetterList where word like '"+word+"'";
-        boolean result=false;
-        
-        try (Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery(SQL);
-            if (rs.next()) {
-                if (rs.getInt(1)>0) {
-                    result=true;
-                } else {
-                    result=false;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return result;
+       		
+		return twoLetterList.contains(word);
     }
     
     public Boolean FindWord (String word) {
@@ -164,7 +140,7 @@ public class WordDict {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
+    } 
     
     private void loadTwoLetterList () {
         try (Statement stmt = conn.createStatement()) {
