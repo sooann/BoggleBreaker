@@ -14,7 +14,7 @@ import java.util.Date;
 public class Player {
 
     private Board board;
-    private WordDict Dict;
+    private IWordMap Dict;
     
     private String CurrentWord = "";
     
@@ -31,7 +31,7 @@ public class Player {
     private int ValidSyllables=0;
     private boolean syllableRejection = false;
     
-    public Player(Board board, WordDict Dict) {
+    public Player(Board board, IWordMap Dict) {
         this.board = board;
         this.Dict = Dict;
         this.boardHeightLimit = board.getHeight();
@@ -54,7 +54,7 @@ public class Player {
         
         for (int i=0; i<WordList.size(); i++) {
             if (WordList.get(i).length()>1) {
-                if (Dict.FindTwoLetters(WordList.get(i))) {
+                if (Dict.StartsWith(WordList.get(i))) {
                     ValidSyllables++;
                 }
             }

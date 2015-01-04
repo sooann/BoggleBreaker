@@ -19,7 +19,8 @@ public class BoggleBreaker {
      */
     private static ArrayList<Board> gameboards = new ArrayList<Board>();
     private static ArrayList<Board> rejectedgameboards = new ArrayList<Board>();
-    private static WordDict dict;
+
+    private static IWordMap dict;
 
     public static void main(String[] args) {
 
@@ -44,8 +45,9 @@ public class BoggleBreaker {
         long SearchResultRejTimeTaken=0;
         
         //load dictionary
-        dict = new WordDict("en_US");
-        
+        //dict = new WordMapDB("en_US"); //DB version
+        dict = new WordMapMem("en_US"); //DB version
+		
         long timestamp = new Date().getTime();
         long SessionStartTime = timestamp;
         while (gameboards.size() != Integer.MAX_VALUE) {
@@ -58,7 +60,7 @@ public class BoggleBreaker {
                 Player play = new Player(tempboard, dict);
 
                 //check if unqiue words >100
-                if (play.getUniqueWordCount() > 100) {
+                if (play.getUniqueWordCount() > 200) {
                     
                     long timetakenmsec = (new Date().getTime() - timestamp);
                     long timetakensec = timetakenmsec/1000;

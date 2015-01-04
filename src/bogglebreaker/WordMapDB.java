@@ -20,12 +20,12 @@ import org.h2.jdbcx.JdbcDataSource;
  *
  * @author user
  */
-public class WordDict {
+public class WordMapDB implements IWordMap{
     
     private Connection conn;
     private ArrayList<String> twoLetterList = new ArrayList<String>();
     
-    public WordDict(String locale) {
+    public WordMapDB(String locale) {
         
         long timestamp = new Date().getTime();
         System.out.println("Loading Dictionary ("+locale+")");
@@ -70,11 +70,6 @@ public class WordDict {
         }
     }
     
-    public Boolean FindTwoLetters (String word) {
-       		
-		return twoLetterList.contains(word);
-    }
-    
     public Boolean FindWord (String word) {
         
         String SQL = "select count(*) from wordlist where word like '"+word+"'";
@@ -98,20 +93,26 @@ public class WordDict {
     public Boolean StartsWith (String word) {
         
         boolean result = false;
-        String SQL = "select count(*) from wordlist where word like '"+word.toUpperCase()+"%'";
+		
+		if (word.length() == 2) {
+			result =  twoLetterList.contains(word);
+		} else {
+			String SQL = "select count(*) from wordlist where word like '"+word.toUpperCase()+"%'";
         
-        try (Statement stmt = conn.createStatement()) {
-            ResultSet rs = stmt.executeQuery(SQL);
-            if (rs.next()) {
-                if (rs.getInt(1)>0) {
-                    result=true;
-                } else {
-                    result=false;
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+			try (Statement stmt = conn.createStatement()) {
+				ResultSet rs = stmt.executeQuery(SQL);
+				if (rs.next()) {
+					if (rs.getInt(1)>0) {
+						result=true;
+					} else {
+						result=false;
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+        
         
         return result;
     }
