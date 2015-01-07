@@ -4,6 +4,7 @@
  */
 package bogglebreaker;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -14,37 +15,53 @@ public class Board {
 
     private int Width;
     private int Height;
-    private BoardCell Cells[][];
+    //private BoardCell Cells[][];
+    
+    private String Content;
+    private ArrayList<String> ContentArray = new ArrayList<String>();
+    private ArrayList<Boolean> UseIndicatorArray = new ArrayList<Boolean>();
+    
+    private int vowels;
+    private int consonants;
+    private String vowelSequence;
 
     public Board() {
         this.Width = 4;
         this.Height = 4;
-        InitBoard();
     }
 
-    public Board(int Width, int Height) {
-        this.Width = Width;
-        this.Height = Height;
-        InitBoard();
-    }
+    public String GenerateContent() {
+        
+        Content = "";
+        ContentArray.clear();
+        UseIndicatorArray.clear();
 
-    private void InitBoard() {
-        Cells = new BoardCell[this.Width][this.Height];
-        for (int i = 0; i < this.Width; i++) {
-            for (int k = 0; k < this.Height; k++) {
-                Cells[i][k] = new BoardCell(getRandomChar());
+        vowels = 0;
+        consonants = 0;
+        vowelSequence="";
+        
+        //Cells = new BoardCell[this.Width][this.Height];
+        for (int i = 0; i < this.Height; i++) {
+            for (int k = 0; k < this.Width; k++) {
+                char letter = getRandomChar();
+                //Cells[k][i] = new BoardCell(letter);
+                Content += letter;
+                ContentArray.add("" + letter);
+                UseIndicatorArray.add(false);
+                if (letter=='A' || letter=='E' || letter=='I' || letter=='O' || letter=='U') {
+                    vowels++;
+                    vowelSequence+=letter;
+                } else {
+                    consonants++;
+                }
             }
         }
+        
+        return Content;
     }
 
     public String BoardContent() {
-        String outtext = "";
-        for (int i = 0; i < this.Width; i++) {
-            for (int k = 0; k < this.Height; k++) {
-                outtext += Cells[i][k].getValue();
-            }
-        }
-        return outtext;
+        return Content;
     }
 
     private char getRandomChar() {
@@ -52,13 +69,8 @@ public class Board {
         final int N = alphabet.length();
 
         Random r = new Random();
-        char Output = ' ';
-
-        for (int i = 0; i < 5; i++) {
-            Output = alphabet.charAt(r.nextInt(N));
-        }
-
-        return Output;
+        
+        return alphabet.charAt(r.nextInt(N));
     }
 
     public void printBoard() {
@@ -68,7 +80,8 @@ public class Board {
             textrow = "";
             System.out.println("");
             for (int k = 0; k < this.Width; k++) {
-                textrow += " " + Cells[k][i].getValue() + " ";
+                //textrow += " " + Cells[k][i].getValue() + " ";
+                textrow += " " + ContentArray.get(k+(i*Width)) + " ";
             }
             System.out.println(textrow);
         }
@@ -87,7 +100,35 @@ public class Board {
         return this.Height;
     }
     
-    public BoardCell getCell (int x, int y) {
-        return Cells[x][y];
+//    public BoardCell getCell (int x, int y) {
+//        return Cells[x][y];
+//    }
+    
+    public String getCellText(int x, int y) {
+        return ContentArray.get(x+(y*Width));
+    }
+    
+    public boolean IsCellUsed(int x, int y) {
+        return UseIndicatorArray.get(x+(y*Width));
+    }
+            
+    public void setUse(int x, int y) {
+        UseIndicatorArray.set(x+(y*Width), true);
+    }
+    
+    public void setUnuse(int x, int y) {
+        UseIndicatorArray.set(x+(y*Width), false);
+    }
+    
+    public int getVowelCount () {
+        return vowels;
+    }
+    
+    public int getConsonants() {
+        return consonants;
+    }
+    
+    public String getVowelSequence() {
+        return vowelSequence;
     }
 }

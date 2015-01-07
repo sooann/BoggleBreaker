@@ -1,0 +1,325 @@
+if (SyllableStats.containsKey(play.getTwoSyllableCount())) {
+    Long[] counter = SyllableStats.get(play.getTwoSyllableCount());
+    counter[0]++;
+    SyllableStats.put(play.getTwoSyllableCount(),counter);
+} else {
+    Long[] counter = new Long[] {1L,0L};
+    SyllableStats.put(play.getTwoSyllableCount(),counter);
+}
+
+for (int i=0; i<MileStoneStat.size(); i++) {
+    if (MileStoneStat.get(i).containsKey(play.getQuarterlyMileStones()[i])) {
+        Long[] counter = MileStoneStat.get(i).get(play.getQuarterlyMileStones()[i]);
+        counter[0]++;
+        MileStoneStat.get(i).put(play.getQuarterlyMileStones()[i], counter);
+    } else {
+        Long[] counter = new Long[] {1L,0L};
+        MileStoneStat.get(i).put(play.getQuarterlyMileStones()[i], counter);
+    }
+}
+
+
+for (int i=0; i<SyllMileStoneStat.size(); i++) {
+    if (SyllMileStoneStat.get(i).containsKey(play.getSyllQuarterlyMileStones()[i])) {
+        Long[] counter = SyllMileStoneStat.get(i).get(play.getSyllQuarterlyMileStones()[i]);
+        counter[0]++;
+        SyllMileStoneStat.get(i).put(play.getSyllQuarterlyMileStones()[i], counter);
+    } else {
+        Long[] counter = new Long[] {1L,0L};
+        SyllMileStoneStat.get(i).put(play.getSyllQuarterlyMileStones()[i], counter);
+    }
+}    
+
+//Vowel count
+int[] VowelList = play.getVowelList();
+int VowelCount = 0;
+for (int i=1; i<6; i++) {
+    VowelCount += VowelList[i];
+}
+if (VowelStats.containsKey(VowelCount)) {
+    Long[] counter = VowelStats.get(VowelCount);
+    counter[0]++;
+    VowelStats.put(VowelCount,counter);
+} else {
+    Long[] counter = new Long[] {1L,0L};
+    VowelStats.put(VowelCount,counter);
+}
+
+                    //Milestone Analysis
+//                    System.out.println("First Milestone Distribution ("+gameboards.size()+"/"+TotalSyllableRejectionCount+"/"+TotalMileStoneRejectionCount+"/"+(RejectedCount-TotalSyllableRejectionCount-TotalMileStoneRejectionCount)+"/"+Timetaken+"): ");
+//
+//                    ArrayList sortedKeys=new ArrayList(SyllMileStoneStat.get(0).keySet());
+//                    Collections.sort(sortedKeys);
+//
+//                    for(int i=0; i<sortedKeys.size(); i++) {
+//                        if ((float)SyllMileStoneStat.get(0).get(sortedKeys.get(i))[0]==0) {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(0).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(0).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(0).get(sortedKeys.get(i))[1] / 1.00 * 100.00);
+//                        } else {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(0).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(0).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(0).get(sortedKeys.get(i))[1] / SyllMileStoneStat.get(0).get(sortedKeys.get(i))[0] * 100.00);
+//                        }
+//
+//                        if (((i+1)%9)==0) {
+//                            System.out.println("");
+//                        }
+//                    }
+//                    System.out.println("");
+//
+//                    System.out.println("Second Milestone Distribution ("+gameboards.size()+"/"+TotalSyllableRejectionCount+"/"+TotalMileStoneRejectionCount+"/"+(RejectedCount-TotalSyllableRejectionCount-TotalMileStoneRejectionCount)+"/"+Timetaken+"): ");
+//
+//                    sortedKeys=new ArrayList(SyllMileStoneStat.get(1).keySet());
+//                    Collections.sort(sortedKeys);
+//
+//                    for(int i=0; i<sortedKeys.size(); i++) {
+//                        if ((float)SyllMileStoneStat.get(1).get(sortedKeys.get(i))[0]==0) {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(1).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(1).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(1).get(sortedKeys.get(i))[1] / 1.00 * 100.00);
+//                        } else {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(1).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(1).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(1).get(sortedKeys.get(i))[1] / SyllMileStoneStat.get(1).get(sortedKeys.get(i))[0] * 100.00);
+//                        }
+//
+//                        if (((i+1)%9)==0) {
+//                            System.out.println("");
+//                        }
+//                    }
+//                    System.out.println("");
+//                    
+//                    System.out.println("Third Milestone Distribution ("+gameboards.size()+"/"+TotalSyllableRejectionCount+"/"+TotalMileStoneRejectionCount+"/"+(RejectedCount-TotalSyllableRejectionCount-TotalMileStoneRejectionCount)+"/"+Timetaken+"): ");
+//
+//                    sortedKeys=new ArrayList(SyllMileStoneStat.get(2).keySet());
+//                    Collections.sort(sortedKeys);
+//
+//                    for(int i=0; i<sortedKeys.size(); i++) {
+//                        if ((float)SyllMileStoneStat.get(2).get(sortedKeys.get(i))[0]==0) {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(2).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(2).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(2).get(sortedKeys.get(i))[1] / 1.00 * 100.00);
+//                        } else {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(2).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(2).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(2).get(sortedKeys.get(i))[1] / SyllMileStoneStat.get(2).get(sortedKeys.get(i))[0] * 100.00);
+//                        }
+//
+//                        if (((i+1)%9)==0) {
+//                            System.out.println("");
+//                        }
+//                    }
+//                    System.out.println("");
+//                    
+//                    System.out.println("Fourth Milestone Distribution ("+gameboards.size()+"/"+TotalSyllableRejectionCount+"/"+TotalMileStoneRejectionCount+"/"+(RejectedCount-TotalSyllableRejectionCount-TotalMileStoneRejectionCount)+"/"+Timetaken+"): ");
+//
+//                    sortedKeys=new ArrayList(SyllMileStoneStat.get(3).keySet());
+//                    Collections.sort(sortedKeys);
+//
+//                    for(int i=0; i<sortedKeys.size(); i++) {
+//                        if ((float)SyllMileStoneStat.get(3).get(sortedKeys.get(i))[0]==0) {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(3).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(3).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(3).get(sortedKeys.get(i))[1] / 1.00 * 100.00);
+//                        } else {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                SyllMileStoneStat.get(3).get(sortedKeys.get(i))[1],
+//                                SyllMileStoneStat.get(3).get(sortedKeys.get(i))[0],
+//                                (float)SyllMileStoneStat.get(3).get(sortedKeys.get(i))[1] / SyllMileStoneStat.get(3).get(sortedKeys.get(i))[0] * 100.00);
+//                        }
+//
+//                        if (((i+1)%9)==0) {
+//                            System.out.println("");
+//                        }
+//                    }
+//                    System.out.println("");
+
+                //Vowel Analysis
+//                    System.out.println ("Total Vowel Analysis:");
+//                    ArrayList sortedKeys=new ArrayList(VowelStats.keySet());
+//                    Collections.sort(sortedKeys);
+//
+//                    for(int i=0; i<sortedKeys.size(); i++) {
+//                        if ((float)VowelStats.get(sortedKeys.get(i))[0]==0) {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                VowelStats.get(sortedKeys.get(i))[1],
+//                                VowelStats.get(sortedKeys.get(i))[0],
+//                                (float)VowelStats.get(sortedKeys.get(i))[1] / 1.00 * 100.00);
+//                        } else {
+//                            System.out.printf(" %02d - %d/%d (%.4f) ", 
+//                                sortedKeys.get(i),
+//                                VowelStats.get(sortedKeys.get(i))[1],
+//                                VowelStats.get(sortedKeys.get(i))[0],
+//                                (float)VowelStats.get(sortedKeys.get(i))[1] / VowelStats.get(sortedKeys.get(i))[0] * 100.00);
+//                        }
+//
+//                        if (((i+1)%8)==0) {
+//                            System.out.println("");
+//                        }
+//                    }
+//                    System.out.println("");
+
+                    //Player Iteration Analysis
+//                    System.out.println("No of Iterations: " + play.getIteration() + ", Time Taken: " + play.getTimeTaken() + " msec, Iteration Duration: " + (float) play.getTimeTaken() / (float) play.getIteration() * 1000.00 + "ns");
+
+                    //Syllable Analysis
+    //                if (MaxUniqueFirstSyll == 0 && MinUniqueFirstSyll == 0) {
+    //                    MaxUniqueFirstSyll = play.getTwoSyllableCount();
+    //                    MinUniqueFirstSyll = play.getTwoSyllableCount();
+    //                } else {
+    //                    if (play.getTwoSyllableCount() >= MaxUniqueFirstSyll) {
+    //                        MaxUniqueFirstSyll = play.getTwoSyllableCount();
+    //                    }
+    //
+    //                    if (play.getTwoSyllableCount() <= MinUniqueFirstSyll) {
+    //                        MinUniqueFirstSyll = play.getTwoSyllableCount();
+    //                    }
+    //                }
+    //
+    //                TotalUniqueFirstSyll += play.getTwoSyllableCount();
+    //                System.out.println("Unique First Syllable Analysis: "
+    //                        + "Current: " + play.getTwoSyllableCount() + " "
+    //                        + "Mean: " + TotalUniqueFirstSyll / gameboards.size() + " "
+    //                        + "Min: " + MinUniqueFirstSyll + " Max: " + MaxUniqueFirstSyll);
+
+                    //Display syllable distribution
+    //                System.out.print("Syllable Distribution: ");
+    //                
+    //                ArrayList sortedKeys=new ArrayList(SyllableStats.keySet());
+    //                Collections.sort(sortedKeys);
+    //                
+    //                for(int i=0; i<sortedKeys.size(); i++) {
+    //                    if ((float)SyllableStats.get(sortedKeys.get(i))[0]==0) {
+    //                        System.out.printf(" %02d - %d/%d (%.4f) ", 
+    //                            sortedKeys.get(i),
+    //                            SyllableStats.get(sortedKeys.get(i))[1],
+    //                            SyllableStats.get(sortedKeys.get(i))[0],
+    //                            (float)SyllableStats.get(sortedKeys.get(i))[1] / 1.00 * 100.00);
+    //                    } else {
+    //                        System.out.printf(" %02d - %d/%d (%.4f) ", 
+    //                            sortedKeys.get(i),
+    //                            SyllableStats.get(sortedKeys.get(i))[1],
+    //                            SyllableStats.get(sortedKeys.get(i))[0],
+    //                            (float)SyllableStats.get(sortedKeys.get(i))[1] / SyllableStats.get(sortedKeys.get(i))[0] * 100.00);
+    //                    }
+    //                    
+    //                    if (((i+1)%7)==0) {
+    //                        System.out.println("");
+    //                    }
+    //                }
+    //                System.out.println("");
+
+                    //Performance Analysis - Sample Size 20
+//                    if (gameboards.size() % 20 == 0) {
+//                        TotalTimeTaken = 0;
+//                        MaxTimeTaken = 0;
+//                        MinTimeTaken = 0;
+//                    }
+//
+//                    if (MaxTimeTaken == 0 && MinTimeTaken == 0) {
+//                        MaxTimeTaken = timetakenmsec;
+//                        MinTimeTaken = timetakenmsec;
+//                    } else {
+//                        if (timetakenmsec >= MaxTimeTaken) {
+//                            MaxTimeTaken = timetakenmsec;
+//                        }
+//
+//                        if (timetakenmsec <= MinTimeTaken) {
+//                            MinTimeTaken = timetakenmsec;
+//                        }
+//                    }
+//
+//                    TotalTimeTaken += timetakenmsec;
+//
+//                    System.out.print(
+//                            String.format("Selection Time Analysis (20 Samples) - Mean: %.4f Min: %.4f Max: %.4f\t\t",
+//                            ((float) TotalTimeTaken / (float) ((gameboards.size() % 20) + 1) / (float) 1000),
+//                            ((float) MinTimeTaken / (float) 1000),
+//                            ((float) MaxTimeTaken / (float) 1000)));
+
+                    //Display Wordlist
+//                    for (int i = 0; i < play.getWordList().size(); i++) {
+//                        System.out.print(play.getWordList().get(i) + ", ");
+//                        if ((i + 1) % 25 == 0) {
+//                            System.out.println("");
+//                        }
+//                    }
+
+                int[] VowelList = play.getVowelList();
+                int VowelCount = 0;
+                for (int i=1; i<6; i++) {
+                    VowelCount += VowelList[i];
+                }
+                if (VowelStats.containsKey(VowelCount)) {
+                    Long[] counter = VowelStats.get(VowelCount);
+                    counter[1]++;
+                    VowelStats.put(VowelCount,counter);
+                } else {
+                    Long[] counter = new Long[] {0L,1L};
+                    VowelStats.put(VowelCount,counter);
+                }
+                
+                if (SyllableStats.containsKey(play.getTwoSyllableCount())) {
+                    Long[] counter = SyllableStats.get(play.getTwoSyllableCount());
+                    counter[1]++;
+                    SyllableStats.put(play.getTwoSyllableCount(),counter);
+                } else {
+                    Long[] counter = new Long[] {0L,1L};
+                    SyllableStats.put(play.getTwoSyllableCount(),counter);
+                }
+                
+                for (int i=0; i<MileStoneStat.size(); i++) {
+                    if (MileStoneStat.get(i).containsKey(play.getQuarterlyMileStones()[i])) {
+                        Long[] counter = MileStoneStat.get(i).get(play.getQuarterlyMileStones()[i]);
+                        counter[1]++;
+                        MileStoneStat.get(i).put(play.getQuarterlyMileStones()[i], counter);
+                    } else {
+                        Long[] counter = new Long[] {0L,1L};
+                        MileStoneStat.get(i).put(play.getQuarterlyMileStones()[i], counter);
+                    }
+                }
+                
+                for (int i=0; i<SyllMileStoneStat.size(); i++) {
+                    if (SyllMileStoneStat.get(i).containsKey(play.getSyllQuarterlyMileStones()[i])) {
+                        Long[] counter = SyllMileStoneStat.get(i).get(play.getSyllQuarterlyMileStones()[i]);
+                        counter[1]++;
+                        SyllMileStoneStat.get(i).put(play.getSyllQuarterlyMileStones()[i], counter);
+                    } else {
+                        Long[] counter = new Long[] {0L,1L};
+                        SyllMileStoneStat.get(i).put(play.getSyllQuarterlyMileStones()[i], counter);
+                    }
+                }
+                
+
+        HashMap<Integer, Long[]> SyllableStats = new HashMap<Integer,Long[]>();
+        
+        HashMap<Integer, Long[]> VowelStats = new HashMap<Integer,Long[]>();
+        
+        ArrayList<HashMap<Integer,Long[]>> MileStoneStat = new ArrayList<HashMap<Integer,Long[]>>();
+        MileStoneStat.add(new HashMap<Integer,Long[]>());
+        MileStoneStat.add(new HashMap<Integer,Long[]>());
+        MileStoneStat.add(new HashMap<Integer,Long[]>());
+        MileStoneStat.add(new HashMap<Integer,Long[]>());
+        
+        ArrayList<HashMap<Integer,Long[]>> SyllMileStoneStat = new ArrayList<HashMap<Integer,Long[]>>();
+        SyllMileStoneStat.add(new HashMap<Integer,Long[]>());
+        SyllMileStoneStat.add(new HashMap<Integer,Long[]>());
+        SyllMileStoneStat.add(new HashMap<Integer,Long[]>());
+        SyllMileStoneStat.add(new HashMap<Integer,Long[]>());

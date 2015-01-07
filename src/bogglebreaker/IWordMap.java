@@ -9,9 +9,10 @@ package bogglebreaker;
  * @author irisyil
  */
 public interface IWordMap {
-	
-	public Boolean FindWord (String word);
-	
-	public Boolean StartsWith (String word);
-	
+    
+    public String getLocale();
+
+    public Boolean FindWord(String word);
+
+    public Boolean StartsWith(String word);
 }

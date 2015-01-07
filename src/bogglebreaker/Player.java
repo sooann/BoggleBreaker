@@ -4,8 +4,13 @@
  */
 package bogglebreaker;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -17,9 +22,11 @@ public class Player {
     private Board board;
     private IWordMap Dict;
     
-    private String CurrentWord = "";
+    private String CurrentWord;
     
-    private int WordFoundCount=0; 
+    private int uniquewordcounter;
+    private int WordFoundCount;
+    
     private ArrayList<String> WordList = new ArrayList<String>();
     //private ArrayList<String> FirstTwoSyl = new ArrayList<String>();
     
@@ -29,31 +36,126 @@ public class Player {
     private int boardHeightLimit;
     private int boardWidthLimit;
     
-    private long iterationCount = 0; 
-    private long preCheckTimeTaken = 0;
+    private long iterationCount; 
+    private long preCheckTimeTaken;
     private long timetaken;
     
-    private int ValidSyllables=0;
-    private boolean syllableRejection = false;
+    private int ValidSyllables;
+    private boolean syllableRejection;
     
-    private int[] QuarterlyMileStones = new int[4];
-    private int MileStoneRejectionQtr=0;
+    private int[] QuarterlyMileStones;
+    private int MileStoneRejectionQtr;
     
-    public Player(Board board, IWordMap Dict) {
+    private int[] SyllQuarterlyMileStones;
+    private int SyllMileStoneRejectionQtr;
+    private boolean RejectBoardSyllMileStone;
+    
+    private boolean VowelValidation;
+    private boolean NoVowelsFound;
+    private boolean VowelCountInvalid;
+    
+    private boolean hasReset = false;
+    
+    public Player (IWordMap dict) {
+        this.Dict = dict;
+    }
+    
+    public void reset() {
+        hasReset=true;
+        
+        CurrentWord = "";
+        
+        uniquewordcounter=0;
+        WordFoundCount=0; 
+        WordList.clear();
+        
+        RejectedLetters.clear();
+        AcceptedLetters.clear();
+        
+        iterationCount = 0; 
+        preCheckTimeTaken = 0;
+        timetaken=0;
+
+        ValidSyllables=0;
+        syllableRejection = false;
+
+        QuarterlyMileStones = new int[4];
+        MileStoneRejectionQtr=0;
+
+        SyllQuarterlyMileStones = new int[4];
+        SyllMileStoneRejectionQtr=0;
+        RejectBoardSyllMileStone = false;
+
+        VowelValidation = true;
+        NoVowelsFound =false;
+        VowelCountInvalid = false;
+    }
+    
+    public int play(Board board) {
+        
+        if (!hasReset) {
+            reset();
+        }
+
         this.board = board;
-        this.Dict = Dict;
         this.boardHeightLimit = board.getHeight();
         this.boardWidthLimit = board.getWidth();
-        
+    
         int CurrX=0;
         int CurrY=0;
         long timestamp = new Date().getTime();
         
+        //check vowels 
+        if (board.getVowelCount()>0) {
+            if (board.getVowelCount()<4||board.getVowelCount()>7) {
+                VowelValidation=false;
+                VowelCountInvalid=true;
+            }
+        } else {
+            VowelValidation=false;
+            NoVowelsFound=true;
+        }
+        
         //count number of 2 valid syllables
         boolean SkipSyllableChecking = false;
-        while (CurrX<boardWidthLimit && CurrY<boardHeightLimit && !SkipSyllableChecking) {
+        int MileStoneCounter=1;
+        while (CurrX<boardWidthLimit && CurrY<boardHeightLimit && !SkipSyllableChecking && !RejectBoardSyllMileStone && VowelValidation) {
+            
             findLetters (CurrX, CurrY,2);
-            if (AcceptedLetters.size()>=48) {
+            
+            //MileStone Rule
+            float boardProgress = (float)MileStoneCounter/(float)(boardHeightLimit*boardWidthLimit)*100.00f;
+            if (boardProgress<25.00) {
+                //SyllQuarterlyMileStones [0] = AcceptedLetters.size();
+                SyllQuarterlyMileStones [0] = ValidSyllables;
+            } else if (boardProgress>=25.00 && boardProgress<50.00) {
+                if (SyllQuarterlyMileStones [0]<6) {
+                    RejectBoardSyllMileStone=true;
+                    SyllMileStoneRejectionQtr=1;
+                } else {
+                    //SyllQuarterlyMileStones [1] = AcceptedLetters.size();
+                    SyllQuarterlyMileStones [1] = ValidSyllables;
+                }
+            } else if (boardProgress>=50.00 && boardProgress<75.00) {
+                if (SyllQuarterlyMileStones [1]<21) {
+                    RejectBoardSyllMileStone=true;
+                    SyllMileStoneRejectionQtr=2;
+                } else {
+                    //SyllQuarterlyMileStones [2] = AcceptedLetters.size();
+                    SyllQuarterlyMileStones [2] = ValidSyllables;
+                }
+            } else {
+                if (SyllQuarterlyMileStones [2]<37) {
+                    RejectBoardSyllMileStone=true;
+                    SyllMileStoneRejectionQtr=3;
+                } else {
+                    //SyllQuarterlyMileStones [3] = AcceptedLetters.size();
+                    SyllQuarterlyMileStones [3] = ValidSyllables;
+                }
+            }
+            MileStoneCounter++;
+                    
+            if (ValidSyllables>=48) {
                 SkipSyllableChecking=true;
             }
             CurrentWord="";
@@ -66,13 +168,14 @@ public class Player {
         
         this.preCheckTimeTaken = new Date().getTime() - timestamp;
         
-        if (ValidSyllables>=48) {
+        if (ValidSyllables>=48 && !RejectBoardSyllMileStone) {
             
             //clear wordlist and reset
             WordList.clear();
-            board.getCell(0, 0).ReleaseCell();
+            //board.getCell(0, 0).ReleaseCell();
+            board.setUnuse(0, 0);
             CurrentWord="";
-            CurrX=0; CurrY=0;
+            CurrX=0; CurrY=0; MileStoneCounter=1;
             iterationCount=0;
             
             //MileStone Rejection
@@ -80,14 +183,14 @@ public class Player {
             
             //search for word
             timestamp = new Date().getTime();
-            int count=1;
+            
             while (CurrX<boardWidthLimit && CurrY<boardHeightLimit && !MileStoneRejected) {
                 
                 findWord (CurrX, CurrY);
                 CurrentWord="";
                 
                 //MileStone Rule
-                float boardProgress = (float)count/(float)(boardHeightLimit*boardWidthLimit)*100.00f;
+                float boardProgress = (float)MileStoneCounter/(float)(boardHeightLimit*boardWidthLimit)*100.00f;
                 if (boardProgress<25.00) {
                     QuarterlyMileStones [0] = WordList.size();
                 } else if (boardProgress>=25.00 && boardProgress<50.00) {
@@ -111,8 +214,9 @@ public class Player {
                 if (MileStoneRejected) {
                     WordList.clear();
                     WordFoundCount=0;
+                    uniquewordcounter=0;
                 }
-                count++;
+                MileStoneCounter++;
                 
                 CurrX++;
                 if (CurrX==boardWidthLimit) {
@@ -133,17 +237,21 @@ public class Player {
             
         } else {
             syllableRejection=true;
+            uniquewordcounter=0;
             WordFoundCount=0;
             WordList.clear();
         }
+        
+        hasReset=false;
+        //return WordList.size();
+        return uniquewordcounter;
     }
     
     private void findLetters (int x, int y, int length) {
         if (x>-1 && x<boardWidthLimit && y>-1 && y<boardHeightLimit && (CurrentWord.length())<length) {
-            BoardCell cell = board.getCell(x, y);
-            if (!cell.IsUsed()) {
-                CurrentWord += cell.getValue();
-                cell.UseCell();
+            if (!board.IsCellUsed(x, y)) {
+                CurrentWord += board.getCellText(x, y);
+                board.setUse(x, y);
                 
                 if (CurrentWord.length() == length) {
                     if (!RejectedLetters.contains(CurrentWord) && !AcceptedLetters.contains(CurrentWord)) {
@@ -180,7 +288,7 @@ public class Player {
                 //GO NW direction
                 findLetters(x-1,y-1,length);  
                 
-                cell.ReleaseCell();
+                board.setUnuse(x, y);
                 CurrentWord = CurrentWord.substring(0, CurrentWord.length()-1);
             }
         }
@@ -188,11 +296,15 @@ public class Player {
     
     private void findWord (int x, int y) {
         if (x>-1 && x<boardWidthLimit && y>-1 && y<boardHeightLimit) {
-            BoardCell cell = board.getCell(x, y);
-            if (!cell.IsUsed()) {
-                CurrentWord += cell.getValue();
-                cell.UseCell();
-                
+//            BoardCell cell = board.getCell(x, y);
+//            if (!cell.IsUsed()) {
+//                CurrentWord += cell.getValue();
+//                cell.UseCell();
+//          
+            if (!board.IsCellUsed(x, y)) {
+                CurrentWord += board.getCellText(x, y);
+                board.setUse(x, y);
+            
                 //System.out.println("Finding Word: "+ CurrentWord);
                 
                 //check if word found
@@ -200,6 +312,7 @@ public class Player {
                     WordFoundCount++;
                     if (!WordList.contains(CurrentWord)) {
                         WordList.add(CurrentWord);
+                        uniquewordcounter++;
                     }
                 }
                 
@@ -232,7 +345,8 @@ public class Player {
                     findWord(x-1,y-1);  
                 }
                 
-                cell.ReleaseCell();
+//                cell.ReleaseCell();
+                board.setUnuse(x, y);
                 CurrentWord = CurrentWord.substring(0, CurrentWord.length()-1);
             }
         }
@@ -243,7 +357,8 @@ public class Player {
     }
     
     public int getUniqueWordCount() {
-        return WordList.size();
+        //return WordList.size();
+        return uniquewordcounter;
     }
     
     public ArrayList<String> getWordList() {
@@ -267,6 +382,10 @@ public class Player {
         return this.syllableRejection;
     }
     
+    public boolean IsSyllableMileStoneRejected() {
+        return this.RejectBoardSyllMileStone;
+    }
+    
     public long getPreCheckTime() {
         return this.preCheckTimeTaken;
     }
@@ -277,6 +396,18 @@ public class Player {
     
     public int getMileStoneRejectedQtr() {
         return MileStoneRejectionQtr;
+    }
+    
+    public int[] getSyllQuarterlyMileStones() {
+        return SyllQuarterlyMileStones;
+    }
+    
+    public boolean IsNoVowelsFound() {
+        return NoVowelsFound;
+    }
+    
+    public boolean IsVowelCountInvalid() {
+        return VowelCountInvalid;
     }
 }
 
